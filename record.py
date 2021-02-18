@@ -2,13 +2,13 @@ from numpy import fft
 import pyaudio
 import numpy as np
 import wave
-
+from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 
 
 
 
-class Recorder:
+class Mic:
     def __init__(self,CHANNELS=1,nCHUNK=4,RATE = 44100):
         self.CHUNK = 1024 * nCHUNK
         self.FORMAT = pyaudio.paInt16
@@ -22,11 +22,16 @@ class Recorder:
             input=True,
             output=True,
             frames_per_buffer=self.CHUNK)
-        self.analysis = AudioAnalysis(self.data)
+
+
+    @property   
+    def analysis(self):
+        return self.AudioAnalysis(self)
+
             
     @property
-    def data(self,informitiveMode=False,dtype=np.int16): 
-        ''' return Live output as real time data'''
+    def output(self,informitiveMode=False,dtype=np.int16): 
+        ''' return Live output as real time data -> numpy array'''
         first_time = 1
         if informitiveMode and first_time == 1:
             first_time=0
@@ -39,22 +44,22 @@ class Recorder:
         else: return data[::2] + 127
 
 
-    def record_data(self,secondLimit=2,asFloat=False,dtype=np.int16):
-        '''return numpy concat array of --secondLimit-- raw data   {default:2 sec}'''
+    def record_output(self,duration=2,asFloat=False,dtype=np.int16):
+        '''return numpy concat array of --duration-- raw output   {default:2 sec}'''
         
-        FRAMES = [np.frombuffer(self.stream.read(self.CHUNK), dtype=dtype) for _ in range(0,int(self.RATE/self.CHUNK*secondLimit))]
+        FRAMES = [np.frombuffer(self.stream.read(self.CHUNK), dtype=dtype) for _ in range(0,int(self.RATE/self.CHUNK*duration))]
         FRAMES = np.concatenate(FRAMES,axis=0)
         if asFloat: return FRAMES.astype(np.float32)
         return FRAMES
 
 
-    def record_toFile(self,secondLimit=3,output_file="outputfile.wav",informitiveMode=True,stop_stream=True):
-        '''record --secondLimit-- long to the --outputfile-- you provide as default it's outputfile.wav  '''
+    def record_toFile(self,duration=3,output_file="outputfile.wav",informitiveMode=True,stop_stream=True):
+        '''record --duration-- long to the --outputfile-- you provide as default it's outputfile.wav  '''
 
         if informitiveMode: print("Start recording ...")
 
-        #storing data to list 
-        FRAMES = [self.stream.read(self.CHUNK) for _ in range(0,int(self.RATE/self.CHUNK*secondLimit))]
+        #storing output to list 
+        FRAMES = [self.stream.read(self.CHUNK) for _ in range(0,int(self.RATE/self.CHUNK*duration))]
         
 
         #close every stream open
@@ -74,7 +79,7 @@ class Recorder:
 
 
 
-    def LivePlot(self,ylim=2**15,figSize=(15, 8)):
+    def plot(self,ylim=2**15,figSize=(10, 5)):
         plt.ion()
         fig, ax = plt.subplots(figsize=figSize)
         x = np.arange(0, 2*self.CHUNK, 2)
@@ -83,21 +88,28 @@ class Recorder:
         ax.set_xlim(0, self.CHUNK)
         #?? #process 
         while True:
-            Live_Mic = self.data
-            line.set_ydata(Live_Mic)
+            line.set_ydata(self.output)
             fig.canvas.draw()
             fig.canvas.flush_events()
+
+
+    class AudioAnalysis:
+        '''an experment class to perform some audio opration in the audio data'''
+        def __init__(self,outerSelf):
+            self.outerSelf = outerSelf
+        
+        def getfft(self):
+            '''apply fourier transform to the output of the data -> numpy array'''
+            return fft(self.outerSelf.output)
+        
+        
 
         
            
     
 
-from scipy.fftpack import fft
-class AudioAnalysis:
-    def __init__(self,data):
-        self.data = data  
-    def getfft(self):
-        return fft(self.data)
+
+
 
 
 
