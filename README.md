@@ -1,7 +1,7 @@
 # Recwpy
 
 ## Record with Python 
-a simple python file that enable you to record live from your microphone,record to wav file 
+a simple python file that enables you to record live from your microphone, record to wav file 
 and even plot live data from your microphone
 
 ### How to Setup
@@ -14,7 +14,7 @@ or if you are in windows
 pip install pipwin
 pipwin install pyaudio
 ```
-it provide you with prebuild pyaudio package
+it provides you with prebuild pyaudio package
 
 ### how to Run
  cd to Recwpy Folder and type:
@@ -24,16 +24,16 @@ it provide you with prebuild pyaudio package
 
 ## Docs
 
-you frist need t init the Record Class
+you first need to init the Record Class
 ```python
 from record import Mic
 mic = Mic()
 ```
-after inializ the class you can get dirctly data form your microphone
+after initializing the class you can get direct data from your microphone
 ```python
-mic.ouput
+mic.output
 ```
-mic.data is numpy array contain the frist chunk of infromation about the mic input
+mic.output is numpy array that contains the first chunk of information about the mic input
 
 if you need just to record to wav file run
 
@@ -41,7 +41,7 @@ if you need just to record to wav file run
 mic.record_toFile(duration = 3, output_file="outputfile.wav", informitiveMode=True, stop_stream=True)
 ```
 `informitiveMode=True`
-is your friend if you want to get glance of what happening behind the seen
+is your friend if you want to get a glance of what happening behind the scene
 
 <hr>
 
@@ -58,5 +58,5 @@ mic = Mic()
 mic.analysis.getfft()
 ```
 `mic.analysis` a class add new functionality to perform some audio analysis in the output you getting from your microphone
-as of now it's in devlopment and just has one function witch is `getfft()`
+as of now, it's in development and just has one function which is `getfft()`
 
