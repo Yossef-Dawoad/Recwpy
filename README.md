@@ -5,9 +5,7 @@ a simple python file that enable you to record live from your microphone,record 
 and even plot live data from your microphone
 
 ### How to Setup
-Clone the repo and you need to have :
-
-pyaudio py simply run 
+Clone the repo and you need to have pyaudio install
 ```
 pip install pyaudio
 ```
@@ -44,3 +42,11 @@ mic.record_toFile(secondLimit = 3, output_file="outputfile.wav", informitiveMode
 ```
 `informitiveMode=True`
 is your friend if you want to get glance of what happening behind the seen
+
+Now Cool part How to Plot Your Mic Output Live just as simple as Writing:
+```python
+  mic = Recorder()
+  mic.LivePlot()
+```
+
+
