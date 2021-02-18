@@ -1,0 +1,119 @@
+from numpy import fft
+import pyaudio
+import numpy as np
+import wave
+
+import matplotlib.pyplot as plt
+
+
+
+
+class Recorder:
+    def __init__(self,CHANNELS=1,nCHUNK=4,RATE = 44100):
+        self.CHUNK = 1024 * nCHUNK
+        self.FORMAT = pyaudio.paInt16
+        self.RATE = RATE
+        self.CHANNELS = CHANNELS
+        self.p = pyaudio.PyAudio()
+        self.stream = self.p.open(
+            format=self.FORMAT,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            input=True,
+            output=True,
+            frames_per_buffer=self.CHUNK)
+        self.analysis = AudioAnalysis(self.data)
+            
+    @property
+    def data(self,informitiveMode=False,dtype=np.int16): 
+        ''' return Live output as real time data'''
+        first_time = 1
+        if informitiveMode and first_time == 1:
+            first_time=0
+            print("Live recording ...")
+            
+        #????? THE  AUCTUAL FUNCTION
+        byte_data = self.stream.read(self.CHUNK)
+        data = np.frombuffer(byte_data, dtype=dtype)
+        if dtype == np.int16:return data
+        else: return data[::2] + 127
+
+
+    def record_data(self,secondLimit=2,asFloat=False,dtype=np.int16):
+        '''return numpy concat array of --secondLimit-- raw data   {default:2 sec}'''
+        
+        FRAMES = [np.frombuffer(self.stream.read(self.CHUNK), dtype=dtype) for _ in range(0,int(self.RATE/self.CHUNK*secondLimit))]
+        FRAMES = np.concatenate(FRAMES,axis=0)
+        if asFloat: return FRAMES.astype(np.float32)
+        return FRAMES
+
+
+    def record_toFile(self,secondLimit=3,output_file="outputfile.wav",informitiveMode=True,stop_stream=True):
+        '''record --secondLimit-- long to the --outputfile-- you provide as default it's outputfile.wav  '''
+
+        if informitiveMode: print("Start recording ...")
+
+        #storing data to list 
+        FRAMES = [self.stream.read(self.CHUNK) for _ in range(0,int(self.RATE/self.CHUNK*secondLimit))]
+        
+
+        #close every stream open
+        if stop_stream:
+            self.stream.stop_stream()
+            self.stream.close()
+            self.p.terminate()
+        if informitiveMode: print("Saving The recording ...")
+
+        # svaing  the list to a file
+        wf = wave.open(output_file,'wb')
+        wf.setnchannels(self.CHANNELS)
+        wf.setsampwidth(self.p.get_sample_size(self.FORMAT))
+        wf.setframerate(self.RATE)
+        wf.writeframes(b''.join(FRAMES))
+        if informitiveMode: print("Complete")
+
+
+
+    def LivePlot(self,ylim=2**15,figSize=(15, 8)):
+        plt.ion()
+        fig, ax = plt.subplots(figsize=figSize)
+        x = np.arange(0, 2*self.CHUNK, 2)
+        line, = ax.plot(x,np.random.rand(self.CHUNK))
+        ax.set_ylim(-ylim, ylim)
+        ax.set_xlim(0, self.CHUNK)
+        #?? #process 
+        while True:
+            Live_Mic = self.data
+            line.set_ydata(Live_Mic)
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+
+        
+           
+    
+
+from scipy.fftpack import fft
+class AudioAnalysis:
+    def __init__(self,data):
+        self.data = data  
+    def getfft(self):
+        return fft(self.data)
+
+
+
+
+
+
+
+    
+
+    
+
+
+        
+
+
+
+
+
+    
