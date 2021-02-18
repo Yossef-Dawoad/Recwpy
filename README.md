@@ -51,4 +51,12 @@ Now the Cool part How to Plot Your Mic Output Live just as simple as Writing:
   mic.plot()
 ```
 
+# New Functionality of the Class
+
+```python
+mic = Mic() 
+mic.analysis.getfft()
+```
+`mic.analysis` a class add new functionality to perform some audio analysis in the output you getting from your microphone
+as of now it's in devlopment and just has one function witch is `getfft()`
 
