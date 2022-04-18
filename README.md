@@ -3,14 +3,15 @@
 ## Record with Python 
 a simple python file that enables you to record live from your microphone, record to wav file 
 and even plot live data from your microphone
-## **Note**: for now I am building a python package that wraps this module and a lot of useful functions so if you want to contribute feel free to check out the library which is being developed
+<!-- ## **Note**: for now I am building a python package that wraps this module and a lot of useful functions so if you want to contribute feel free to check out the library which is being developed -->
 
 ### How to Setup
-Clone the repo and you need to have pyaudio install
+- first Clone the repo   
+- you need to have pyaudio install  
 ```
 pip install pyaudio
 ```
-or if you are in windows 
+#### or if you are in windows 
 ```Shell
 pip install pipwin
 pipwin install pyaudio
@@ -39,7 +40,9 @@ mic.output is numpy array that contains the first chunk of information about the
 if you need just to record to wav file run
 
 ```python
-mic.record_toFile(duration = 3, output_file="outputfile.wav", informitiveMode=True, stop_stream=True)
+mic.record_toFile(output_file="outputfile.wav",
+                  informitiveMode=True, 
+                  duration=3)
 ```
 `informitiveMode=True`
 is your friend if you want to get a glance of what happening behind the scene
